@@ -14,7 +14,7 @@ permissions:
   security-events: write
 
 jobs:
-  build:
+  setup:
     runs-on: self-hosted
 
     steps:
@@ -31,3 +31,13 @@ jobs:
           else
             echo "Ansible is already installed."
           fi
+  ansible:
+    needs: setup
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Ansible Playbook
+        run: |
+           echo Ansible

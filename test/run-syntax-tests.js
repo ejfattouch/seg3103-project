@@ -10,7 +10,7 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(error => {
+main().catch((error) => {
   console.error('Test execution failed:', error);
   process.exit(1);
 });

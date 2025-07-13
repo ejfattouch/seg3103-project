@@ -1,4 +1,9 @@
 ---
+- name: Remove broken docker source file if exists
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
+    state: absent
+
 - name: Install dependencies
   ansible.builtin.apt:
     name: "{{ item }}"
@@ -11,14 +16,14 @@
     - gnupg-agent
     - software-properties-common
 
-- name: Add GPG key
+- name: Add Docker GPG key
   ansible.builtin.apt_key:
     url: "https://download.docker.com/linux/ubuntu/gpg"
     state: present
 
-- name: Add Docker repository to apt
+- name: Add Docker APT Repositroy
   ansible.builtin.apt_repository:
-    repo: "deb https://download.docker.com/linux/ubuntu stable"
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
     state: present
 
 - name: Install Docker
@@ -44,6 +49,6 @@
 
 - name: Add user to 'docker' group
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
+    name: "admin"
     group: docker
     append: true

@@ -7,6 +7,11 @@ async function main() {
   const results = await tester.runAllTests();
   
   console.log('\n=== TEST EXECUTION COMPLETE ===');
+
+  if (results.error_count > 0) {
+    console.error(`Syntax errors found: ${results.error_count}`);
+  }
+
   process.exit(0);
 }
 

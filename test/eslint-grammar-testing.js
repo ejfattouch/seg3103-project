@@ -1,3 +1,4 @@
+const { error, log } = require('console');
 const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
@@ -114,6 +115,8 @@ class JavaScriptGrammarTester {
 
     const targetFiles = ['./controllers/ai.js', './app.js']; // Check both locations
 
+    let error_count = 0;
+
     for (const file of targetFiles) {
       if (fs.existsSync(file)) {
         try {
@@ -124,6 +127,8 @@ class JavaScriptGrammarTester {
           console.log(`  Total Issues: ${result.messages.length}`);
           console.log(`  Errors: ${result.errorCount}`);
           console.log(`  Warnings: ${result.warningCount}`);
+
+          error_count += result.errorCount;
 
           if (result.messages.length > 0) {
             console.log('  Sample Issues:');
@@ -139,6 +144,10 @@ class JavaScriptGrammarTester {
       }
     }
     console.log('');
+
+    return {
+      error_count: error_count
+    };
   }
 
   async runAllTests() {
@@ -147,7 +156,7 @@ class JavaScriptGrammarTester {
 
     const validCount = await this.testValidPatterns();
     const rejectCount = await this.testInvalidMutations();
-    await this.testCodebaseFiles();
+    const error_count = await this.testCodebaseFiles();
 
     console.log('=== SUMMARY ===');
     console.log(`Valid patterns accepted: ${validCount}/${this.validPatterns.length}`);
@@ -157,7 +166,8 @@ class JavaScriptGrammarTester {
       validPassed: validCount,
       invalidRejected: rejectCount,
       totalValid: this.validPatterns.length,
-      totalInvalid: this.invalidMutations.length
+      totalInvalid: this.invalidMutations.length,
+      error_count: error_count.error_count
     };
   }
 }

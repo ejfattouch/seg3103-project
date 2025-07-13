@@ -8,6 +8,9 @@ on:
 
   workflow_dispatch:
 
+env:
+  ANSIBLE_CONFIG: ./infra/ansible.cfg
+
 permissions:
   contents: read
   pull-requests: write
@@ -42,3 +45,7 @@ jobs:
       
       - name: Run Ansible Playbook
         run: ansible-playbook infra/playbook.yml --tags test --extra-vars "checkout_dir=${{ github.workspace }}"
+
+      - name: Fix permissions before runner cleanup
+        if: always()  # ensure this runs even if the previous step fails
+        run: sudo chown -R $(whoami):$(whoami) $GITHUB_WORKSPACE

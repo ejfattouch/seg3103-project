@@ -2,9 +2,9 @@
 - name: Install Node.js dependencies
   ansible.builtin.command: npm ci
   args:
-    chdir: /home/ubuntu/app
+    chdir: "{{ checkout_dir }}"
 
 - name: Run unit tests
   ansible.builtin.command: npm test
   args:
-    chdir: /home/ubuntu/app
+    chdir: "{{ checkout_dir }}"

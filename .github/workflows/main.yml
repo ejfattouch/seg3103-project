@@ -33,13 +33,12 @@ jobs:
           fi
       - name: Run Ansible Playbook setup role
         run: ansible-playbook infra/playbook.yml --tags setup
-  # ansible:
-  #   needs: setup
-  #   runs-on: self-hosted
+  test:
+    needs: setup
+    runs-on: self-hosted
     
-  #   steps:
-  #     - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
       
-  #     - name: Run Ansible Playbook
-  #       run: ansible-playbook infra/playbook.yml
-
+      - name: Run Ansible Playbook
+        run: ansible-playbook infra/playbook.yml --tags test

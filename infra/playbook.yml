@@ -4,6 +4,6 @@
 
   roles:
     - {role: setup, tags: ["setup"]}
-    - {role: test, tags: ["unit"]}
+    - {role: test, tags: ["test"]}
     - {role: integration, tags: ["integration"]}
     - {role: deploy, tags: ["deploy"]}

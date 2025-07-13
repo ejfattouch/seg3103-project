@@ -47,3 +47,13 @@
     name: "admin"
     group: docker
     append: true
+
+- name: Install Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+
+- name: Install npm
+  ansible.builtin.apt:
+    name: npm
+    state: present

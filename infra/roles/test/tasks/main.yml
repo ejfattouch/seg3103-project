@@ -1,3 +1,4 @@
+---
 - name: Install Node.js dependencies
   ansible.builtin.command: npm ci
   args:

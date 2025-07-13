@@ -11,7 +11,6 @@ const { ChatTogetherAI } = require('@langchain/community/chat_models/togetherai'
 const { HumanMessage } = require('@langchain/core/messages');
 const { CacheBackedEmbeddings } = require('langchain/embeddings/cache_backed');
 const { MongoClient } = require('mongodb');
-// eslint-disable-next-line import/extensions
 const pdfjsLib = require('pdfjs-dist/legacy/build/pdf.mjs');
 
 /**
@@ -428,7 +427,7 @@ exports.postRagAsk = async (req, res) => {
 
     // Before parsing the results, check to see if we have a valid response so we don't crash
     if (!results?.generations?.length || results.generations.length < 2) {
-      req.flash('errors', { msg: `Unable to get a valid response from the LLM. Please try again.` });
+      req.flash('errors', { msg: 'Unable to get a valid response from the LLM. Please try again.' });
       return res.redirect('/ai/rag');
     }
     const ragResponse = results.generations[0][0].text;
@@ -479,6 +478,7 @@ exports.postOpenAIModeration = async (req, res) => {
     error = 'Text for input modaration check:';
   } else {
     try {
+      // eslint-disable-next-line no-undef
       const response = await fetch('https://api.openai.com/v1/moderations', {
         method: 'POST',
         headers: {
@@ -518,6 +518,7 @@ exports.postOpenAIModeration = async (req, res) => {
 
 // Shared Together AI API caller
 const callTogetherAiApi = async (apiRequestBody, apiKey) => {
+  // eslint-disable-next-line no-undef
   const response = await fetch('https://api.together.xyz/v1/chat/completions', {
     method: 'POST',
     headers: {

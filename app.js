@@ -329,6 +329,7 @@ app.get('/auth/quickbooks/callback', passport.authorize('quickbooks', { failureR
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
+  console.log(next);
   res.status(404).send('Page Not Found');
 });
 

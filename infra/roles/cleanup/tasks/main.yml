@@ -1,0 +1,6 @@
+---
+- name: Stop MongoDB container
+  community.docker.docker_compose_v2:
+    project_src: "{{ checkout_dir }}"
+    state: absent
+    build: true

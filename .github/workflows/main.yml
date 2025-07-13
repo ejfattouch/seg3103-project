@@ -49,3 +49,12 @@ jobs:
       - name: Fix permissions before runner cleanup
         if: always()  # ensure this runs even if the previous step fails
         run: sudo chown -R $(whoami):$(whoami) $GITHUB_WORKSPACE
+  integration:
+    needs: test
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Run Ansible Playbook
+        run: ansible-playbook infra/playbook.yml --tags integration --extra-vars "checkout_dir=${{ github.workspace }}"

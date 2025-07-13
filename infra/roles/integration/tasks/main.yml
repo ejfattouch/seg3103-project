@@ -1,0 +1,24 @@
+---
+- name: Build and run MongoDB with docker-compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ checkout_dir }}"
+    state: present
+    build: always
+
+- name: Ensure ~/app directory exists
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/app"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0755'
+
+- name: Copy source code to ~/app
+  ansible.builtin.copy:
+    src: "{{ checkout_dir }}/"
+    dest: "/home/{{ ansible_user_id }}/app/"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0644'
+    directory_mode: '0755'
+  ignore_errors: false

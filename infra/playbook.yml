@@ -1,0 +1,13 @@
+- name: "Full lifecycle, test, integration, deploy"
+  hosts: localhost
+  become: true
+
+#   roles:
+#     - {role: test, tags: ["unit"]}
+#     - {role: integration, tags: ["integration"]}
+#     - {role: deploy, tags: ["deploy"]}
+
+  tasks:
+    - name: "Echo a message"
+      ansible.builtin.debug:
+        msg: "This is a placeholder task to demonstrate the playbook structure."

@@ -3,4 +3,11 @@
   community.docker.docker_compose_v2:
     project_src: "{{ checkout_dir }}"
     state: absent
-    build: true
+
+- name: Force delete all Docker images
+  ansible.builtin.shell: docker rmi -f $(docker images -aq)
+
+- name: Remove the application directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/app"
+    state: absent

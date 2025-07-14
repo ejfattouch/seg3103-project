@@ -58,3 +58,13 @@ jobs:
       
       - name: Run Ansible Playbook
         run: ansible-playbook infra/playbook.yml --tags integration --extra-vars "checkout_dir=${{ github.workspace }}"
+
+  cleanup:
+    needs: [setup, test, integration]
+    runs-on: self-hosted
+
+    if: always()  # ensure this runs even if previous jobs fail
+
+    steps:
+      - name: Run Cleanup Ansible Playbook
+        run: ansible-playbook infra/playbook.yml --tags cleanup --extra-vars "checkout_dir=${{ github.workspace }}"

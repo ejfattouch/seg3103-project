@@ -5,20 +5,26 @@
     state: present
     build: always
 
-- name: Ensure ~/app directory exists
-  ansible.builtin.file:
-    path: "/home/{{ ansible_user_id }}/app"
-    state: directory
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0755'
+- name: Wait for Mongo to accept TCP connections
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 27017
 
-- name: Copy source code to ~/app
-  ansible.builtin.copy:
-    src: "{{ checkout_dir }}/"
-    dest: "/home/{{ ansible_user_id }}/app/"
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0644'
-    directory_mode: '0755'
-  ignore_errors: false
+- name: Wait for app to open port 8080
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 8080
+
+- name: Call /health endpoint to verify app and DB are working
+  ansible.builtin.uri:
+    url: http://localhost:8080/health
+    method: GET
+    status_code: 200
+    return_content: true
+  register: health_response
+
+- name: Assert MongoDB is connected
+  ansible.builtin.assert:
+    that:
+      - health_response.json.db == "connected"
+    fail_msg: "App is running but MongoDB is not connected"

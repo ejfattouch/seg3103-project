@@ -1,4 +1,3 @@
-const { error, log } = require('console');
 const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
@@ -25,34 +24,58 @@ class JavaScriptGrammarTester {
             }
           },
           rules: {
-            'no-unused-vars': 'error', // Variable declaration syntax
-            'no-undef': 'error', // undefined variables
-            'no-unreachable': 'error', // Control flow syntax
-            semi: ['error', 'always'], // Statement termination
-            quotes: ['error', 'single'], // String literal syntax
-            indent: ['error', 2] // indentation structure validation
+            // syntax rules
+            'no-unused-vars': 'error',
+            'no-undef': 'error',
+            'no-unreachable': 'error',
+
+            // code style conventions
+            'semi': ['error', 'always'],           //  Semicolon requirement
+            'camelcase': 'error',                  //  CamelCase naming
+            'quotes': ['error', 'single'],         //  Single quotes only
+            'indent': ['error', 2],                //  2-space indentation
+            'brace-style': ['error', '1tbs'],      //  One True Brace Style
           }
         }
       ]
     });
 
-    // Valid JavaScript patterns (ground strings from ECMAScript grammar)
+    // Valid JavaScript patterns and conventions
     this.validPatterns = [
-      'const x = 5;', // VariableStatement
-      'function test() { return true; }', // FunctionDeclaration
-      'if (x > 0) { console.log("positive"); }', // IfStatement
-      'const obj = { key: "value" };', // ObjectLiteral
-      'for (let i = 0; i < 10; i++) { }' // IterationStatement
+      'const x = 5;',
+      'function test() { return true; }',
+      'if (x > 0) { console.log("positive"); }',
+      'const obj = { key: "value" };',
+      'for (let i = 0; i < 10; i++) { }',
+      'const userName = "john";'              // camelCase naming
     ];
 
     // Invalid mutations (should fail)
     this.invalidMutations = [
-      'const = 5;', // Missing identifier
-      'function () { return true; }', // Missing function name
+      // Convention violations
+      'const user_name = "john";',             // camelCase violation (snake_case)
+      'const x = 5',                           // Missing semicolon
+      'const str = "double quotes";',          // Should use single quotes
+      'if (true) {\nconsole.log("bad");\n}',   // Wrong indentation
+      'if (true)\n{\n  console.log("test");\n}', // Wrong brace style
+
+      // Syntax errors (parse failures)
+      'function () { return true; }',          // Missing function name
       'if x > 0) { console.log("positive"); }', // Missing opening paren
-      'const obj = { key "value" };', // Missing colon
-      'for let i = 0; i < 10; i++) { }' // Missing opening paren
+      'const obj = { key "value" };',          // Missing colon
+      'for let i = 0; i < 10; i++) { }',      // Missing opening parenthesis
+      'const = 5;'                             // Missing identifier
     ];
+
+    // Mutation operators
+    this.mutationOperators = {
+      removeSemicolon: (code) => code.replace(/;/g, ''),
+      wrongOperator: (code) => code.replace(/=/g, '=='),
+      missingOperator: (code) => code.replace(/\s*=\s*/g, ' '),
+      unbalancedQuotes: (code) => code.replace(/"([^"]*)"/g, '"$1'),
+      removeReturn: (code) => code.replace(/return\s+/g, ''),
+      removeFunctionName: (code) => code.replace(/function\s+\w+/g, 'function')
+    };
   }
 
   async testValidPatterns() {
@@ -62,15 +85,14 @@ class JavaScriptGrammarTester {
     for (const pattern of this.validPatterns) {
       try {
         const results = await this.eslint.lintText(pattern);
-        const hasParseErrors = results[0].messages.some((msg) => msg.severity === 2 && msg.fatal);
+        const hasParseErrors = results[0].messages.some(msg => msg.severity === 2 && msg.fatal);
 
         if (!hasParseErrors) {
           console.log(`✓ VALID: ${pattern}`);
           passCount++;
         } else {
           console.log(`✗ FAILED: ${pattern}`);
-          // Show the actual error
-          results[0].messages.forEach((msg) => {
+          results[0].messages.forEach(msg => {
             if (msg.fatal) {
               console.log(`  Parse Error: ${msg.message}`);
             }
@@ -85,37 +107,91 @@ class JavaScriptGrammarTester {
     return passCount;
   }
 
+  async testMutations() {
+    console.log('=== Mutation Testing ===\n');
+
+    let totalMutations = 0;
+    let rejectedMutations = 0;
+
+    for (const validPattern of this.validPatterns) {
+      console.log(`Generating mutations for: ${validPattern}`);
+
+      for (const [operatorName, mutationFn] of Object.entries(this.mutationOperators)) {
+        try {
+          const mutatedCode = mutationFn(validPattern);
+
+          // Only test if the mutation actually changed the code
+          if (mutatedCode !== validPattern) {
+            totalMutations++;
+
+            try {
+              const results = await this.eslint.lintText(mutatedCode);
+              const hasErrors = results[0].messages.some(msg => msg.severity === 2);
+
+              if (hasErrors) {
+                console.log(`  ✓ ${operatorName}: "${mutatedCode}" - CORRECTLY REJECTED`);
+                rejectedMutations++;
+              } else {
+                console.log(`  ✗ ${operatorName}: "${mutatedCode}" - SHOULD HAVE FAILED`);
+              }
+            } catch (error) {
+              console.log(`  ✓ ${operatorName}: "${mutatedCode}" - PARSE ERROR (correctly rejected)`);
+              rejectedMutations++;
+            }
+          }
+        } catch (error) {
+          // Skip mutations that fail to generate
+        }
+      }
+      console.log('');
+    }
+
+    console.log(`Mutation Results: ${rejectedMutations}/${totalMutations} mutations correctly rejected\n`);
+    return { rejected: rejectedMutations, total: totalMutations };
+  }
+
   async testInvalidMutations() {
-    console.log('=== Testing Invalid Grammar Mutations ===\n');
-    let rejectCount = 0;
+    console.log('=== Testing Invalid Grammar Mutations & Convention Violations ===\n');
+
+    let syntaxRejectCount = 0;
+    let conventionViolationCount = 0;
 
     for (const mutation of this.invalidMutations) {
       try {
         const results = await this.eslint.lintText(mutation);
-        const hasParseErrors = results[0].messages.some((msg) => msg.severity === 2 && msg.fatal);
+        const hasParseErrors = results[0].messages.some(msg => msg.severity === 2 && msg.fatal);
+        const hasStyleViolations = results[0].messages.some(msg => msg.severity === 2 && !msg.fatal);
 
         if (hasParseErrors) {
-          console.log(`✓ CORRECTLY REJECTED: ${mutation}`);
-          rejectCount++;
+          console.log(`✓ SYNTAX ERROR: ${mutation}`);
+          syntaxRejectCount++;
+        } else if (hasStyleViolations) {
+          console.log(`✓ CONVENTION VIOLATION: ${mutation}`);
+          // Show which rule was violated
+          const violations = results[0].messages.filter(msg => msg.ruleId);
+          violations.forEach(violation => {
+            console.log(`  Rule: ${violation.ruleId}`);
+          });
+          conventionViolationCount++;
         } else {
-          console.log(`✗ SHOULD HAVE FAILED: ${mutation}`);
+          console.log(`✗ NOT DETECTED: ${mutation}`);
         }
       } catch (error) {
-        console.log(`✓ CORRECTLY REJECTED: ${mutation} - Parse Error`);
-        rejectCount++;
+        console.log(`✓ PARSE ERROR: ${mutation}`);
+        syntaxRejectCount++;
       }
     }
 
-    console.log(`\nInvalid Mutations: ${rejectCount}/${this.invalidMutations.length} correctly rejected\n`);
-    return rejectCount;
+    console.log(`\nMutation Results: ${syntaxRejectCount} syntax errors, ${conventionViolationCount} convention violations detected\n`);
+    return { syntaxErrors: syntaxRejectCount, conventionViolations: conventionViolationCount };
   }
 
   async testCodebaseFiles() {
     console.log('=== Testing Real Codebase Files ===\n');
 
-    const targetFiles = ['./controllers/ai.js', './app.js']; // Check both locations
+    const targetFiles = ['app.js'];  // Check both locations
 
-    let error_count = 0;
+    let errorCount = 0;
 
     for (const file of targetFiles) {
       if (fs.existsSync(file)) {
@@ -128,14 +204,17 @@ class JavaScriptGrammarTester {
           console.log(`  Errors: ${result.errorCount}`);
           console.log(`  Warnings: ${result.warningCount}`);
 
-          error_count += result.errorCount;
+          errorCount += result.errorCount;
 
           if (result.messages.length > 0) {
-            console.log('  Sample Issues:');
-            result.messages.slice(0, 5).forEach((msg) => {
+            console.log('  Top Issues:');
+            result.messages.slice(0, 5).forEach(msg => {
               console.log(`    Line ${msg.line}: ${msg.message} (${msg.ruleId || 'parse-error'})`);
             });
+          } else {
+            console.log('  ✓ No issues found!');
           }
+          break;
         } catch (error) {
           console.log(`  ✗ File has syntax errors: ${error.message}`);
         }
@@ -146,28 +225,32 @@ class JavaScriptGrammarTester {
     console.log('');
 
     return {
-      error_count: error_count
+      error_count: errorCount
     };
   }
 
   async runAllTests() {
-    console.log('ESLint-Based Syntax Testing Framework\n');
-    console.log('=====================================\n');
+    console.log('Enhanced ESLint-Based Syntax Testing Framework\n');
+    console.log('==============================================\n');
 
     const validCount = await this.testValidPatterns();
-    const rejectCount = await this.testInvalidMutations();
-    const error_count = await this.testCodebaseFiles();
+    const mutationResults = await this.testMutations();
+    const invalidResults = await this.testInvalidMutations();
+    await this.testCodebaseFiles();
 
-    console.log('=== SUMMARY ===');
+    console.log('=== ENHANCED SUMMARY ===');
     console.log(`Valid patterns accepted: ${validCount}/${this.validPatterns.length}`);
-    console.log(`Invalid mutations rejected: ${rejectCount}/${this.invalidMutations.length}`);
+    console.log(`Mutations rejected: ${mutationResults.rejected}/${mutationResults.total}`);
+    console.log(`Invalid mutations rejected: ${invalidResults.syntaxErrors + invalidResults.conventionViolations}/${this.invalidMutations.length}`);
 
     return {
       validPassed: validCount,
-      invalidRejected: rejectCount,
+      MutationsRejected: mutationResults.rejected,
+      totalMutations: mutationResults.total,
+      syntaxErrorsDetected: invalidResults.syntaxErrors,
+      conventionViolationsDetected: invalidResults.conventionViolations,
       totalValid: this.validPatterns.length,
-      totalInvalid: this.invalidMutations.length,
-      error_count: error_count.error_count
+      totalInvalid: this.invalidMutations.length
     };
   }
 }

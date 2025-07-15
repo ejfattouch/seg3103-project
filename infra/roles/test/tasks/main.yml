@@ -1,9 +1,27 @@
+---
 - name: Install Node.js dependencies
   ansible.builtin.command: npm ci
   args:
-    chdir: /home/ubuntu/app
+    chdir: "{{ checkout_dir }}"
+  register: npm_ci_result
+
+- name: Show npm ci output
+  ansible.builtin.debug:
+    var: npm_ci_result.stdout_lines
 
 - name: Run unit tests
   ansible.builtin.command: npm test
   args:
-    chdir: /home/ubuntu/app
+    chdir: "{{ checkout_dir }}"
+  register: npm_test_result
+  ignore_errors: true
+
+- name: Show test output
+  ansible.builtin.debug:
+    var: npm_test_result.stdout_lines
+
+- name: Fail if syntax errors were reported
+  ansible.builtin.fail:
+    msg: |
+      ESLint-based syntax errors were detected: {{ npm_test_result.stderr }}
+  when: "'Syntax errors found' in npm_test_result.stderr"

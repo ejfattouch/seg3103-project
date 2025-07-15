@@ -205,6 +205,20 @@ app.get('/account/unlink/:provider', passportConfig.isAuthenticated, userControl
 /**
  * API examples routes.
  */
+
+/**
+ * Health check route.
+ */
+app.get('/health', (req, res) => {
+  // Optionally verify DB connection:
+  const dbReady = mongoose.connection.readyState === 1;
+  if (dbReady) {
+    res.status(200).json({ status: 'ok', db: 'connected' });
+  } else {
+    res.status(500).json({ status: 'error', db: 'disconnected' });
+  }
+});
+
 app.get('/api', apiController.getApi);
 app.get('/api/lastfm', apiController.getLastfm);
 app.get('/api/nyt', apiController.getNewYorkTimes);
@@ -329,6 +343,7 @@ app.get('/auth/quickbooks/callback', passport.authorize('quickbooks', { failureR
 app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
+  console.log(next);
   res.status(404).send('Page Not Found');
 });
 

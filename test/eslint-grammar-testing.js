@@ -1,3 +1,4 @@
+const { error, log } = require('console');
 const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');
@@ -24,12 +25,12 @@ class JavaScriptGrammarTester {
             }
           },
           rules: {
-            'no-unused-vars': 'error',    // Variable declaration syntax
-            'no-undef': 'error',          // undefined variables
-            'no-unreachable': 'error',    // Control flow syntax
-            'semi': ['error', 'always'],   // Statement termination
-            'quotes': ['error', 'single'], // String literal syntax
-            'indent': ['error', 2]         // indentation structure validation
+            'no-unused-vars': 'error', // Variable declaration syntax
+            'no-undef': 'error', // undefined variables
+            'no-unreachable': 'error', // Control flow syntax
+            semi: ['error', 'always'], // Statement termination
+            quotes: ['error', 'single'], // String literal syntax
+            indent: ['error', 2] // indentation structure validation
           }
         }
       ]
@@ -37,20 +38,20 @@ class JavaScriptGrammarTester {
 
     // Valid JavaScript patterns (ground strings from ECMAScript grammar)
     this.validPatterns = [
-      'const x = 5;',                           // VariableStatement
-      'function test() { return true; }',       // FunctionDeclaration
+      'const x = 5;', // VariableStatement
+      'function test() { return true; }', // FunctionDeclaration
       'if (x > 0) { console.log("positive"); }', // IfStatement
-      'const obj = { key: "value" };',          // ObjectLiteral
-      'for (let i = 0; i < 10; i++) { }'       // IterationStatement
+      'const obj = { key: "value" };', // ObjectLiteral
+      'for (let i = 0; i < 10; i++) { }' // IterationStatement
     ];
 
     // Invalid mutations (should fail)
     this.invalidMutations = [
-      'const = 5;',              // Missing identifier
-      'function () { return true; }',  // Missing function name
+      'const = 5;', // Missing identifier
+      'function () { return true; }', // Missing function name
       'if x > 0) { console.log("positive"); }', // Missing opening paren
-      'const obj = { key "value" };',      // Missing colon
-      'for let i = 0; i < 10; i++) { }'   // Missing opening paren
+      'const obj = { key "value" };', // Missing colon
+      'for let i = 0; i < 10; i++) { }' // Missing opening paren
     ];
   }
 
@@ -61,7 +62,7 @@ class JavaScriptGrammarTester {
     for (const pattern of this.validPatterns) {
       try {
         const results = await this.eslint.lintText(pattern);
-        const hasParseErrors = results[0].messages.some(msg => msg.severity === 2 && msg.fatal);
+        const hasParseErrors = results[0].messages.some((msg) => msg.severity === 2 && msg.fatal);
 
         if (!hasParseErrors) {
           console.log(`✓ VALID: ${pattern}`);
@@ -69,7 +70,7 @@ class JavaScriptGrammarTester {
         } else {
           console.log(`✗ FAILED: ${pattern}`);
           // Show the actual error
-          results[0].messages.forEach(msg => {
+          results[0].messages.forEach((msg) => {
             if (msg.fatal) {
               console.log(`  Parse Error: ${msg.message}`);
             }
@@ -91,7 +92,7 @@ class JavaScriptGrammarTester {
     for (const mutation of this.invalidMutations) {
       try {
         const results = await this.eslint.lintText(mutation);
-        const hasParseErrors = results[0].messages.some(msg => msg.severity === 2 && msg.fatal);
+        const hasParseErrors = results[0].messages.some((msg) => msg.severity === 2 && msg.fatal);
 
         if (hasParseErrors) {
           console.log(`✓ CORRECTLY REJECTED: ${mutation}`);
@@ -112,7 +113,9 @@ class JavaScriptGrammarTester {
   async testCodebaseFiles() {
     console.log('=== Testing Real Codebase Files ===\n');
 
-    const targetFiles = ['./controllers/ai.js', 'app.js'];  // Check both locations
+    const targetFiles = ['./controllers/ai.js', './app.js']; // Check both locations
+
+    let error_count = 0;
 
     for (const file of targetFiles) {
       if (fs.existsSync(file)) {
@@ -125,13 +128,14 @@ class JavaScriptGrammarTester {
           console.log(`  Errors: ${result.errorCount}`);
           console.log(`  Warnings: ${result.warningCount}`);
 
+          error_count += result.errorCount;
+
           if (result.messages.length > 0) {
             console.log('  Sample Issues:');
-            result.messages.slice(0, 5).forEach(msg => {
+            result.messages.slice(0, 5).forEach((msg) => {
               console.log(`    Line ${msg.line}: ${msg.message} (${msg.ruleId || 'parse-error'})`);
             });
           }
-          break; // Only test the first file found
         } catch (error) {
           console.log(`  ✗ File has syntax errors: ${error.message}`);
         }
@@ -140,6 +144,10 @@ class JavaScriptGrammarTester {
       }
     }
     console.log('');
+
+    return {
+      error_count: error_count
+    };
   }
 
   async runAllTests() {
@@ -148,7 +156,7 @@ class JavaScriptGrammarTester {
 
     const validCount = await this.testValidPatterns();
     const rejectCount = await this.testInvalidMutations();
-    await this.testCodebaseFiles();
+    const error_count = await this.testCodebaseFiles();
 
     console.log('=== SUMMARY ===');
     console.log(`Valid patterns accepted: ${validCount}/${this.validPatterns.length}`);
@@ -158,7 +166,8 @@ class JavaScriptGrammarTester {
       validPassed: validCount,
       invalidRejected: rejectCount,
       totalValid: this.validPatterns.length,
-      totalInvalid: this.invalidMutations.length
+      totalInvalid: this.invalidMutations.length,
+      error_count: error_count.error_count
     };
   }
 }

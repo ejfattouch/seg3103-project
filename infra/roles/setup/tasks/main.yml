@@ -10,15 +10,16 @@
     - curl
     - gnupg-agent
     - software-properties-common
+    - python3-pip
 
-- name: Add GPG key
+- name: Add Docker GPG key
   ansible.builtin.apt_key:
     url: "https://download.docker.com/linux/ubuntu/gpg"
     state: present
 
-- name: Add Docker repository to apt
+- name: Add Docker APT Repositroy
   ansible.builtin.apt_repository:
-    repo: "deb https://download.docker.com/linux/ubuntu stable"
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
     state: present
 
 - name: Install Docker
@@ -30,6 +31,7 @@
     - docker-ce
     - docker-ce-cli
     - containerd.io
+    - docker-compose
 
 - name: Ensure Docker service is running
   ansible.builtin.service:
@@ -44,6 +46,16 @@
 
 - name: Add user to 'docker' group
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
+    name: "admin"
     group: docker
     append: true
+
+- name: Install Node.js
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+
+- name: Install npm
+  ansible.builtin.apt:
+    name: npm
+    state: present

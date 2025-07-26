@@ -1,0 +1,90 @@
+{"email":"","password":"opA@o8we"}
+{"email":"","password":"<script>"}
+{"email":"{$regex": ".*"}","password":"cLNSy3xwJY"}
+{"email":"","password":"7DoPHEfJWW"}
+{"email":"QBAZtu","password":"<script>"}
+{"email":{$gt": ""},"password":{$lt": "zzzz"}}
+{"email":"","password":"1qY9GxNLD6"}
+{"email":"4avuf","password":{$ne": "wrong"}}
+{"email":"{$gt": ""}","password":{$regex": "^.*"}}
+{"email":"","password":"mnep5NV("}
+{"email":{$gt": ""},"password":{$ne": "wrong"}}
+{"email":{$lt": "zzzz"},"password":"XjWln"}
+{"email":"","password":"ajXt5K9KL2"}
+{"email":"tNVT58O5ta","password":"0-XGXo(k!K"}
+{"email":"{$regex": ".*"}","password":"Rf(QyWLjS)"}
+{"email":{$gt": ""},"password":{$gt": ""}}
+{"email":"nlOPO7ulED","password":"<img src=x onerror="}
+{"email":"","password":{$lt": "zzzz"}}
+{"email":{$lt": "zzzz"},"password":"Yl1uw"}
+{"email":"J4F9k","password":{$lt": "zzzz"}}
+{"email":"","password":"RyW4(j&3"}
+{"email":"{$where": "1==1"}","password":{$regex": "^.*"}}
+{"email":"","password":"&lt;script&gt;"}
+{"email":"","password":"javascript:"}
+{"email":"","password":"By6)!%Lr"}
+{"email":"{$regex": ".*"}","password":"w=S1s*^u"}
+{"email":{$lt": "zzzz"},"password":")av7@p97R7in"}
+{"email":{$gt": ""},"password":"*8G@HwQI8&"}
+{"email":"","password":"RmmDG"}
+{"email":"3ZtQ7","password":"<script>"}
+{"email":"","password":"<img src=x onerror="}
+{"email":{$ne": "wrong"},"password":"javascript:"}
+{"email":"","password":"<img src=x onerror="}
+{"email":"","password":"<img src=x onerror="}
+{"email":"s5UHGv","password":"<script>"}
+{"email":"","password":"<img src=x onerror="}
+{"email":"","password":{$in": ["admin", "user"]}}
+{"email":{$ne": "wrong"},"password":"3ax1D"}
+{"email":"","password":"ly6fAy"}
+{"email":"{$gt": ""}","password":"8xxSoy"}
+{"email":{$lt": "zzzz"},"password":{$ne": "wrong"}}
+{"email":{$ne": "wrong"},"password":"lWdML"}
+{"email":{$ne": "wrong"},"password":"O@*bIpt$)+"}
+{"email":"{$where": "1==1"}","password":"QO68b"}
+{"email":"","password":"<script>"}
+{"email":"rl04h","password":"&lt;script&gt;"}
+{"email":{$gt": ""},"password":"CVHY=ZiIBh"}
+{"email":{$ne": "wrong"},"password":"<script>"}
+{"email":"Rmzhv","password":"-@zSYn_an"}
+{"email":{$lt": "zzzz"},"password":{$gt": ""}}
+{"email":"GTOGv","password":"xxZb=N*iMb"}
+{"email":"{$exists": true}","password":"&lt;script&gt;"}
+{"email":"{$regex": ".*"}","password":"Q-SqpPYw"}
+{"email":"","password":"javascript:"}
+{"email":"{$regex": ".*"}","password":{$lt": "zzzz"}}
+{"email":"{$where": "1==1"}","password":"8s7wxO"}
+{"email":{$regex": "^.*"},"password":"<script>"}
+{"email":"","password":"kD*MaDlezmO"}
+{"email":{$lt": "zzzz"},"password":{$lt": "zzzz"}}
+{"email":"{$regex": ".*"}","password":"mTv(i=ZY"}
+{"email":"9KD4l","password":"YbE99VACL9"}
+{"email":"","password":{$in": ["admin", "user"]}}
+{"email":"{$exists": true}","password":"NAbjA"}
+{"email":"","password":{$ne": "wrong"}}
+{"email":"{$where": "1==1"}","password":"Bj%(Kpz!"}
+{"email":"","password":"kGp=#8JB"}
+{"email":"","password":{$gt": ""}}
+{"email":"","password":"s6ldMAY2"}
+{"email":{$ne": "wrong"},"password":"2dc2gda0U8"}
+{"email":"{$regex": ".*"}","password":"BqU(KIW$a"}
+{"email":"2SVxC3","password":"wB6NlaZh4Q"}
+{"email":"","password":"<script>"}
+{"email":"{$where": "1==1"}","password":"fbk3nvKedy"}
+{"email":"7huxb","password":{$gt": ""}}
+{"email":"{$exists": true}","password":"WIsUgXCcVm"}
+{"email":{$in": ["admin", "user"]},"password":"Q&Yw*wAy"}
+{"email":"","password":"<script>"}
+{"email":"{$ne": null}","password":"bQJdv"}
+{"email":"{$gt": ""}","password":"&lt;script&gt;"}
+{"email":{$ne": "wrong"},"password":{$regex": "^.*"}}
+{"email":{$gt": ""},"password":"ta3E3(rX"}
+{"email":"NEtgQ","password":"<script>"}
+{"email":"TvCY6","password":"U5udcRM9xC"}
+{"email":"","password":"<img src=x onerror="}
+{"email":{$regex": "^.*"},"password":"&lt;script&gt;"}
+{"email":"sQwYOcOTXO","password":"J4NKbfK16"}
+{"email":"","password":"m&puAODuD"}
+{"email":{$gt": ""},"password":{$in": ["admin", "user"]}}
+{"email":"","password":{$regex": "^.*"}}
+{"email":"DUtpeuImGN","password":"8nYJkz0Ijk"}

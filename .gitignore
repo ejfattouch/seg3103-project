@@ -59,3 +59,7 @@ Thumbs.db
 .VolumeIcon.icns
 .com.apple.timemachine.donotpresent
 node_modules/
+./grammarinator/venv
+grammarinator/venv/
+grammarinator\testing\__pycache__
+grammarinator\grammar\__pycache__
